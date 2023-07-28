@@ -1,0 +1,27 @@
+﻿@model GadgetIsLanding.Models.Game
+
+@{
+    var imagePath = (Model != null && !string.IsNullOrEmpty(Model.Image)) ?
+    "/images/games/" + Model.Image :
+    "/images/placeholder.jpg";
+}
+
+<img id="image-preview" class="img-thumbnail" src="@imagePath" alt="Game Photo" />
+
+<script>
+    function previewImage(event) {
+        const input = event.target;
+
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            
+            reader.onload = function (e) {
+                const imagePreview = document.querySelector("#image-preview");
+                imagePreview.src = e.target.result;
+                imagePreview.style.display = "block";
+            }
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>

@@ -1,0 +1,22 @@
+﻿
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center justify-content-around flex-grow-1 w-100">
+    <h1 class="display-4">GadgetIsLanding! Find A Game!</h1>
+    <h3>You Want Games? We got Games?</h3>
+    <div class="d-flex justify-content-around">
+
+        @foreach(var game in (IEnumerable<Game>) ViewData["games"])
+        {
+            <div class = "flex-grow-1 card p-1 justify-content-between" style="width: 18rem;">
+                <p>@game.Name</p>
+                <img class="img" src="/images/games/@game.Image">
+            </div>
+        }
+    </div>
+    <div>
+        <a href="/Store">Buy a Game Here!</a>
+    </div>
+</div>

@@ -1,0 +1,50 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+
+}
+
+body {
+    margin-bottom: 60px;
+    background-color: #0e0e0e
+}
+h1,h2,h3,h4,h5,h6{
+    color: #f3f3f3;
+}
+
+.img-thumbnail {
+  max-width: 150px; 
+
+}
+.img {
+    max-height: 30rem;
+    width: 100%;
+    padding: 0;
+}
+a{
+    color: #f3f3f3;
+    text-decoration: none;
+}
+footer {
+    background-color: #f3f3f3;
+}
+.container {
+    color: #bfbfbf;
+}
+.table {
+    color: #bfbfbf; 
+}
+
+.card{
+    background-color: #f3f3f3;
+}
