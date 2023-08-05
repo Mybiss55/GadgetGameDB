@@ -1,0 +1,72 @@
+﻿@model GadgetIsLanding.Models.Cart
+
+@{
+    if(Model == null || Model.CartItems == null || Model.CartItems.Count == 0)
+    {
+        <div class="alert alert-warning">
+            <h1>Cart is empty</h1>
+        </div>
+
+        return;
+    }
+}
+
+
+@{
+    ViewData["Title"] = "Cart Details: " + Model.User.Email;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Game Name</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Subtotal</th>
+                <th></th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach(var cartItem in Model.CartItems)
+            {
+                var subtotal = cartItem.Price * cartItem.Quantity;
+            
+            <tr>
+                <td>@cartItem.Game.Name</td>
+                <td>@cartItem.Quantity</td>
+                <td>@cartItem.Price</td>
+                <td>@subtotal</td>
+                <td>
+                    <form class="d-inline" asp-action="RemoveFromCart">
+                        <input type="hidden" name="cartItemId" value="@cartItem.Id">
+                        <input type="submit" value="Remove" class="btn btn-danger">
+                    </form>
+
+                    <a class="btn btn-secondary" asp-action="GameDetails" asp-route-id="@cartItem.GameId">
+                        See Game
+                    </a>
+                </td>
+            </tr>
+            }
+        </tbody>
+
+        <tfoot>
+            @{
+                var total = Model.CartItems.Sum(ci => ci.Price * ci.Quantity);
+            }
+            <tr>
+                <th>Total: </th>
+                <td colspan="3">@total</td>
+                <td></td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+<div>
+    <a asp-action="Index">Back to Genres</a>
+</div>

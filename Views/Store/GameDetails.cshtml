@@ -50,6 +50,22 @@
     </dl>
 </div>
 <div>
+    @if (User.Identity.IsAuthenticated)
+    {
+        <form asp-action="AddToCart">
+            <input type="hidden" name="gameId" value="@Model.Id">
+
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">Quantity</span>
+                </div>
+                <input class="form-control" type="number" name="quantity" value="1">
+                <div class="input-group-append">
+                    <input type="submit" value="Add To Cart" class="btn btn-primary">
+                </div>
+            </div>
+        </form>
+    }
     @{
         var backlink = "Back to " + Model.Genre.Name;
     }

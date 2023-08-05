@@ -52,14 +52,14 @@
             <td>
                 @if (User.Identity.IsAuthenticated)
                 {
-                    <form asp-action="AddToCart">
+                    <form class="d-inline" asp-action="AddToCart">
                         <input type="hidden" name="gameId" value="@item.Id">
                         <input type="hidden" name="quantity" value="1">
 
-                        <input type="submit" value="Add To Cart" class="btn btn-danger">
+                        <input type="submit" value="Add To Cart" class="btn btn-primary">
                     </form>
                 }
-                <a asp-action="GameDetails" asp-route-id="@item.Id">See Game~!</a> 
+                <a class="btn btn-secondary"  asp-action="GameDetails" asp-route-id="@item.Id">See Game~!</a> 
             </td>
         </tr>
 }

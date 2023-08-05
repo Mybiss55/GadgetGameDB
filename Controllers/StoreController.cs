@@ -1,7 +1,9 @@
 ﻿using GadgetIsLanding.Data;
+using GadgetIsLanding.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace GadgetIsLanding.Controllers
 {
@@ -42,6 +44,70 @@ namespace GadgetIsLanding.Controllers
                 .FirstOrDefaultAsync(game => game.Id == id);
 
             return View(game);
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> AddToCart(int gameId, int quantity)
+        {
+            // Get logged in user
+
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            // Get the UserCart for this user, or create one if it doesn't exist
+
+            var cart = await _context.Cart
+                .Include(cart => cart.CartItems)
+                .FirstOrDefaultAsync(cart => cart.UserId == userId && cart.Active == true);
+
+            if (cart == null)
+            {
+                cart = new Models.Cart { UserId = userId, Active = true };
+                await _context.Cart.AddAsync(cart);
+                await _context.SaveChangesAsync();
+            }
+
+            // Find game
+            var game = await _context.Game
+                .FirstOrDefaultAsync(game => game.Id == gameId);
+
+            if(game == null)
+            {
+                return NotFound();
+            }
+
+            // Create cart item
+
+            var CartItem = new CartItem
+            {
+                Cart = cart,
+                Game = game,
+                Price = game.Price
+            };
+            
+            if(ModelState.IsValid)
+            {
+                await _context.AddAsync(CartItem);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("ViewMyCart");
+            }
+
+            return NotFound();
+
+        }
+
+        [Authorize]
+        public async Task<IActionResult> ViewMyCart()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            var cart = await _context.Cart
+                .Include(cart => cart.User)
+                .Include(cart => cart.CartItems)
+                .ThenInclude(cartItem => cartItem.Game)
+                .FirstOrDefaultAsync(cart => cart.UserId == userId && cart.Active == true);
+
+            return View(cart);
         }
     }
 }
