@@ -13,6 +13,7 @@ namespace GadgetIsLanding.Components.ViewComponents
         {
             new MenuItem { Controller = "Home", Action = "Index", Label = "Home" },
             new MenuItem { Controller = "Store", Action = "Index", Label = "Store" },
+            new MenuItem { Controller = "Store", Action = "ViewMyCart", Label = "Cart", Authorized = true },
             new MenuItem { Controller = "Genres", Action = "Index", Label = "Genres", DropdownItems = new List<MenuItem> {
                 new MenuItem { Controller = "Genres", Action = "Index", Label = "List" },
                 new MenuItem { Controller = "Genres", Action = "Create", Label = "Create" },

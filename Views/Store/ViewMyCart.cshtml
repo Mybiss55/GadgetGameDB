@@ -3,8 +3,8 @@
 @{
     if(Model == null || Model.CartItems == null || Model.CartItems.Count == 0)
     {
-        <div class="alert alert-warning">
-            <h1>Cart is empty</h1>
+        <div class="alert">
+            <h1>Cart is empty, please add games!</h1>
         </div>
 
         return;
@@ -20,7 +20,7 @@
 <h1>@ViewData["Title"]</h1>
 
 <div>
-    <table class="table table-striped">
+    <table class="table">
         <thead>
             <tr>
                 <th>Game Name</th>
@@ -68,5 +68,6 @@
     </table>
 </div>
 <div>
-    <a asp-action="Index">Back to Genres</a>
+    <a class="btn btn-success" asp-action="Checkout">Checkout</a>
+    <a class="btn btn-secondary" asp-action="Index">Genres</a>
 </div>

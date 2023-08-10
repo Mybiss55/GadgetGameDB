@@ -2,6 +2,7 @@
 using GadgetIsLanding.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
@@ -39,9 +40,9 @@ namespace GadgetIsLanding.Controllers
 
         public async Task<IActionResult> GameDetails(int? id)
         {
-              var game = await _context.Game
-                .Include(game => game.Genre)
-                .FirstOrDefaultAsync(game => game.Id == id);
+            var game = await _context.Game
+              .Include(game => game.Genre)
+              .FirstOrDefaultAsync(game => game.Id == id);
 
             return View(game);
         }
@@ -57,7 +58,6 @@ namespace GadgetIsLanding.Controllers
             // Get the UserCart for this user, or create one if it doesn't exist
 
             var cart = await _context.Cart
-                .Include(cart => cart.CartItems)
                 .FirstOrDefaultAsync(cart => cart.UserId == userId && cart.Active == true);
 
             if (cart == null)
@@ -71,7 +71,10 @@ namespace GadgetIsLanding.Controllers
             var game = await _context.Game
                 .FirstOrDefaultAsync(game => game.Id == gameId);
 
-            if(game == null)
+
+            // No Product? Run away!
+
+            if (game == null)
             {
                 return NotFound();
             }
@@ -82,10 +85,11 @@ namespace GadgetIsLanding.Controllers
             {
                 Cart = cart,
                 Game = game,
+                Quantity = quantity,
                 Price = game.Price
             };
-            
-            if(ModelState.IsValid)
+
+            if (ModelState.IsValid)
             {
                 await _context.AddAsync(CartItem);
                 await _context.SaveChangesAsync();
@@ -108,6 +112,59 @@ namespace GadgetIsLanding.Controllers
                 .FirstOrDefaultAsync(cart => cart.UserId == userId && cart.Active == true);
 
             return View(cart);
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> RemoveFromCart(int cartItemId)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            var cart = await _context.Cart
+                .FirstOrDefaultAsync(cart => cart.UserId == userId && cart.Active == true);
+
+            if (cart == null)
+            {
+                return NotFound();
+            }
+
+            var cartItem = await _context.CartItem
+                .FirstOrDefaultAsync(cartItem => cartItem.Cart == cart && cartItem.Id == cartItemId);
+
+            if (cartItem != null)
+            {
+                _context.Remove(cartItem);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction("ViewMyCart");
+            }
+
+            return NotFound();
+        }
+
+        [Authorize]
+        public async Task<IActionResult> Checkout()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            var cart = await _context.Cart
+                .Include(cart => cart.User)
+                .Include(cart => cart.CartItems)
+                .ThenInclude(cartItem => cartItem.Game)
+                .FirstOrDefaultAsync(cart => cart.UserId == userId && cart.Active == true);
+
+            var order = new Models.Order
+            {
+                UserId = userId,
+                Cart = cart,
+                Total = cart.CartItems.Sum(cartItem => cartItem.Price * cartItem.Quantity),
+                ShippingAddress = "",
+                PaymentMethod = Models.PaymentMethod.VISA,
+                };
+
+            ViewData["PaymentMethods"] = new SelectList(Enum.GetValues(typeof(Models.PaymentMethod)));  
+
+            return View(order);
         }
     }
 }
