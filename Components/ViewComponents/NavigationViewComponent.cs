@@ -13,15 +13,17 @@ namespace GadgetIsLanding.Components.ViewComponents
         {
             new MenuItem { Controller = "Home", Action = "Index", Label = "Home" },
             new MenuItem { Controller = "Store", Action = "Index", Label = "Store" },
-            new MenuItem { Controller = "Store", Action = "ViewMyCart", Label = "Cart", Authorized = true },
-            new MenuItem { Controller = "Genres", Action = "Index", Label = "Genres", DropdownItems = new List<MenuItem> {
-                new MenuItem { Controller = "Genres", Action = "Index", Label = "List" },
-                new MenuItem { Controller = "Genres", Action = "Create", Label = "Create" },
-            }, Authorized = true, AllowedRoles = new List<string> { "Administrator" } },
-            new MenuItem { Controller = "Games", Action = "Index", Label = "Games", DropdownItems = new List<MenuItem> {
-                new MenuItem { Controller = "Games", Action = "Index", Label = "List" },
-                new MenuItem { Controller = "Games", Action = "Create", Label = "Create" },
-            }, Authorized = true , AllowedRoles = new List<string> { "Administrator" }},
+            new MenuItem { Controller = "Store", Action = "ViewMyCart", Label = "Cart", },
+            new MenuItem { Controller = "Store", Action = "OrderDetails", Label = "Orders", },
+
+            new MenuItem { Controller = "Orders", Action = "Index", Label = "Admin", Authorized = true, AllowedRoles = new List<string> { "Administrator" },
+                DropdownItems = new List<MenuItem>
+                {
+                    new MenuItem { Controller = "Genres", Action = "Index", Label = "Genre" },
+                    new MenuItem { Controller = "Games", Action = "Index", Label = "Games" },
+                    new MenuItem { Controller = "Orders", Action = "Index", Label = "Orders" },
+                    new MenuItem { Controller = "Carts", Action = "Index", Label = "Carts" },
+                } },
             new MenuItem { Controller = "Home", Action = "Privacy", Label = "Privacy" },
         };
 

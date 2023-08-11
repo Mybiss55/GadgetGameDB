@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using GadgetIsLanding.Data;
 using GadgetIsLanding.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GadgetIsLanding.Controllers
 {
+    [Authorize(Roles = "Administrator")]
     public class OrdersController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -46,6 +48,7 @@ namespace GadgetIsLanding.Controllers
         }
 
         // GET: Orders/Create
+
         public IActionResult Create()
         {
             ViewData["CartId"] = new SelectList(_context.Cart, "Id", "Id");

@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Stripe;
+using Stripe.BillingPortal;
+using Stripe.Checkout;
 using System.Security.Claims;
 
 namespace GadgetIsLanding.Controllers
@@ -12,11 +15,13 @@ namespace GadgetIsLanding.Controllers
     {
         // Property for Database connection
         ApplicationDbContext _context;
+        private IConfiguration _configuration;
 
         // Constructor
-        public StoreController(ApplicationDbContext context)
+        public StoreController(ApplicationDbContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
         //Makes this faster, was "public IActionResult Index()"
         public async Task<IActionResult> Index()
@@ -163,6 +168,113 @@ namespace GadgetIsLanding.Controllers
                 };
 
             ViewData["PaymentMethods"] = new SelectList(Enum.GetValues(typeof(Models.PaymentMethod)));  
+
+            return View(order);
+        }
+
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> Payment(string shippingAddress, Models.PaymentMethod paymentMethod)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            var cart = await _context.Cart
+                .Include(cart => cart.CartItems)
+                .FirstOrDefaultAsync(cart => cart.UserId == userId && cart.Active == true);
+
+            if(cart == null) { return NotFound(); }
+
+            // Add order data to session
+
+            HttpContext.Session.SetString("ShippingAddress", shippingAddress);
+            HttpContext.Session.SetString("PaymentMethod", paymentMethod.ToString());
+
+            // Set Stripe API key
+            StripeConfiguration.ApiKey = _configuration.GetSection("Stripe")["SecretKey"];
+
+            // Create payment intent
+
+            var options = new Stripe.Checkout.SessionCreateOptions
+            {
+                LineItems = new List<SessionLineItemOptions>
+                {
+                    new SessionLineItemOptions
+                    {
+                        PriceData = new SessionLineItemPriceDataOptions
+                        {
+                            UnitAmount = (long)(cart.CartItems.Sum(cartItem => cartItem.Price * cartItem.Quantity) * 100),
+                            Currency = "cad",
+                            ProductData = new SessionLineItemPriceDataProductDataOptions
+                            {
+                                Name = "GadgetIsLanding Purchase",
+                            },
+                        },
+                        Quantity = 1,
+                    },
+                },
+                PaymentMethodTypes = new List<string>
+                {
+                    "card",
+                },
+                Mode = "payment",
+                SuccessUrl = "https://" + Request.Host + "/Store/SaveOrder",
+                CancelUrl = "https://" + Request.Host + "/Store/ViewMyCart",
+            };
+
+            var service = new Stripe.Checkout.SessionService();
+            Stripe.Checkout.Session session = service.Create(options);
+
+            Response.Headers.Add("Location", session.Url);
+            return new StatusCodeResult(303);
+        }
+
+        public async Task<IActionResult> SaveOrder()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            var cart = await _context.Cart
+                .Include(cart => cart.CartItems)
+                .FirstOrDefaultAsync(cart => cart.UserId == userId && cart.Active == true);
+
+            var paymentMethod = HttpContext.Session.GetString("PaymentMethod");
+            var shippingAddress = HttpContext.Session.GetString("ShippingAddress");
+
+            var order = new Order()
+            {
+                UserId = userId,
+                Cart = cart,
+                Total = cart.CartItems.Sum(cartItem => cartItem.Quantity + cartItem.Price),
+                ShippingAddress = shippingAddress,
+                PaymentMethod = (Models.PaymentMethod)Enum.Parse(typeof(Models.PaymentMethod), paymentMethod),
+                PaymentReceived = true,
+            };
+
+            await _context.AddAsync(order);
+            await _context.SaveChangesAsync();
+
+            cart.Active = false;
+            _context.Update(cart);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("OrderDetails", new { orderId = order.Id });
+        }
+
+        [Authorize]
+        public async Task<IActionResult> OrderDetails(int orderId)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            var order = await _context.Order
+                .Include(order => order.User)
+                .Include(order => order.Cart)
+                .ThenInclude(cart => cart.CartItems)
+                .ThenInclude(cartItem => cartItem.Game)
+                .FirstOrDefaultAsync(order => order.Id == orderId && order.UserId == userId);
+
+            if (order == null)
+            {
+                return NotFound();
+            }
 
             return View(order);
         }

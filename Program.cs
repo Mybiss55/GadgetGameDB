@@ -34,7 +34,23 @@ namespace GadgetIsLanding
                     options.ClientSecret = googleAuth["ClientSecret"];
                 });
 
+            // Adding new dependency so controllers can read the configuration
+            builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
+
+            // Add session
+
+            builder.Services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(30);
+                options.Cookie.HttpOnly = true;
+                // Make the session cookie essential
+                options.Cookie.IsEssential = true;
+            });
+
+
             var app = builder.Build();
+
+            app.UseSession();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
