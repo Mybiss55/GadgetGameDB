@@ -7,9 +7,6 @@
 
 <h1>Index</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
 <table class="table">
     <thead>
         <tr>
@@ -26,7 +23,7 @@
                 @Html.DisplayNameFor(model => model.PaymentMethod)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Cart)
+                @Html.DisplayNameFor(model => model.Id)
             </th>
             <th></th>
         </tr>
@@ -48,9 +45,16 @@
                     @Html.DisplayFor(modelItem => item.PaymentMethod)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Cart.Id)
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
+                <td>
+                    <a class="btn btn-primary" asp-action="OrderDetails" asp-controller="Store" asp-route-Id="@item.Id">Details</a>
                 </td>
             </tr>
         }
     </tbody>
+
 </table>
+<div>
+    <a class="btn btn-outline-primary" asp-action="Index" asp-controller="Store">Store</a>
+</div>

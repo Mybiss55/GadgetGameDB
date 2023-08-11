@@ -164,7 +164,7 @@ namespace GadgetIsLanding.Controllers
                 Cart = cart,
                 Total = cart.CartItems.Sum(cartItem => cartItem.Price * cartItem.Quantity),
                 ShippingAddress = "",
-                PaymentMethod = Models.PaymentMethod.VISA,
+                PaymentMethod = Models.PaymentMethod.Stripe,
                 };
 
             ViewData["PaymentMethods"] = new SelectList(Enum.GetValues(typeof(Models.PaymentMethod)));  
@@ -260,6 +260,7 @@ namespace GadgetIsLanding.Controllers
         }
 
         [Authorize]
+        [Route("Store/OrderDetails/{orderId}")]
         public async Task<IActionResult> OrderDetails(int orderId)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -270,7 +271,6 @@ namespace GadgetIsLanding.Controllers
                 .ThenInclude(cart => cart.CartItems)
                 .ThenInclude(cartItem => cartItem.Game)
                 .FirstOrDefaultAsync(order => order.Id == orderId && order.UserId == userId);
-
             if (order == null)
             {
                 return NotFound();
