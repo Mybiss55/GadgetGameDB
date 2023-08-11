@@ -278,5 +278,19 @@ namespace GadgetIsLanding.Controllers
 
             return View(order);
         }
+
+        [Authorize]
+        public async Task<IActionResult> Orders(int orderId) {
+
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            var orders = _context.Order
+                .Include(o => o.Cart)
+                .Include(order => order.User)
+                .Where(order => order.UserId == userId);
+
+            return View(orders);
+
+        }
     }
 }

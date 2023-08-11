@@ -14,7 +14,7 @@ namespace GadgetIsLanding.Components.ViewComponents
             new MenuItem { Controller = "Home", Action = "Index", Label = "Home" },
             new MenuItem { Controller = "Store", Action = "Index", Label = "Store" },
             new MenuItem { Controller = "Store", Action = "ViewMyCart", Label = "Cart", },
-            new MenuItem { Controller = "Store", Action = "OrderDetails", Label = "Orders", },
+            new MenuItem { Controller = "Store", Action = "Orders", Label = "Orders", },
 
             new MenuItem { Controller = "Orders", Action = "Index", Label = "Admin", Authorized = true, AllowedRoles = new List<string> { "Administrator" },
                 DropdownItems = new List<MenuItem>

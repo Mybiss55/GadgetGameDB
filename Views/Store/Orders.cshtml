@@ -1,11 +1,11 @@
 ﻿@model IEnumerable<GadgetIsLanding.Models.Order>
 
 @{
-    ViewData["Title"] = "Orders";
+    ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>@ViewData["Title"]</h1>
+<h1>Index</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -13,9 +13,6 @@
 <table class="table">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.UserId)
-            </th>
             <th>
                 @Html.DisplayNameFor(model => model.Total)
             </th>
@@ -39,9 +36,6 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.UserId)
-                </td>
-                <td>
                     @Html.DisplayFor(modelItem => item.Total)
                 </td>
                 <td>
@@ -57,7 +51,6 @@
                     @Html.DisplayFor(modelItem => item.Cart.Id)
                 </td>
             </tr>
-            <a asp-action="OrderDetails" asp-route-id="@item.Id">Details</a>
         }
     </tbody>
 </table>

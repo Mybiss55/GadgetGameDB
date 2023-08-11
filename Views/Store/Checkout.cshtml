@@ -56,13 +56,9 @@
 <div>
     <form asp-action="Payment">
         <div class="form-group my-3">
-            <label asp-for="ShippingAddress" class="control-label"></label>
-            <textarea asp-for="ShippingAddress" class="form-control" required></textarea>
+            <label class="control-label">Shipping Address</label>
+            <input asp-for="ShippingAddress" class="form-control email" required></input>
             <span asp-validation-for="ShippingAddress" class="text-danger"></span>
-        </div>        
-        <div class="form-group my-3">
-            <label asp-for="PaymentMethod" class="control-label"></label>
-            <select asp-for="PaymentMethod" class="form-control" asp-items="ViewBag.PaymentMethods"></select>
         </div>        
         <div class="form-group my-3">
             <input type="submit" value="Go to Payment" class="btn btn-success" />

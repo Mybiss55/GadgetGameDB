@@ -10,9 +10,12 @@
 
         @foreach(var game in (IEnumerable<Game>) ViewData["games"])
         {
+            
             <div class = "flex-grow-1 card p-1 justify-content-between" style="width: 18rem;">
-                <p>@game.Name</p>
-                <img class="img" src="/images/games/@game.Image">
+                <h4 class="text-dark">@game.Name</h4>
+                <a asp-action="GameDetails" asp-controller="Store" asp-route-id="@game.Id">
+                    <img class="img" src="/images/games/@game.Image">
+                </a>
             </div>
         }
     </div>

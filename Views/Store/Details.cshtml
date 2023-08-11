@@ -7,20 +7,20 @@
 
 <h1>@ViewData["Title"]</h1>
 
-<table class="table">
+<table class="table table-sm">
     <thead>
         <tr>
             <th>
                 @Html.DisplayNameFor(model => model.Games.FirstOrDefault().Name)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Games.FirstOrDefault().Price)
-            </th>
-            <th>
                 @Html.DisplayNameFor(model => model.Games.FirstOrDefault().Description)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Games.FirstOrDefault().Developer)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Games.FirstOrDefault().Price)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Games.FirstOrDefault().Image)
@@ -44,6 +44,9 @@
                 @Html.DisplayFor(modelItem => item.Developer)
             </td>
             <td>
+                @Html.DisplayFor(modelItem => item.Price)
+            </td>
+            <td>
                 <partial name="_GamePhoto" model="item" />
             </td>
             <td>
@@ -56,10 +59,10 @@
                         <input type="hidden" name="gameId" value="@item.Id">
                         <input type="hidden" name="quantity" value="1">
 
-                        <input type="submit" value="Quick Add" class="btn btn-primary">
+                            <input type="submit" value="Quick Add" class="btn btn-outline-info m-2">
                     </form>
                 }
-                <a class="btn btn-secondary"  asp-action="GameDetails" asp-route-id="@item.Id">See Game~!</a> 
+                    <a class="btn btn-outline-info m-2" asp-action="GameDetails" asp-route-id="@item.Id">See Game~!</a>
             </td>
         </tr>
 }
